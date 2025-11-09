@@ -261,7 +261,7 @@ python src/train.py --batch-size 16 --seq-len 64 --epochs 5 --d-model 256 --debu
   title = {Transformer Language Modeling Implementation},
   author = {wujiaqi},
   year = {2025},
-  url = {https://github.com/your-username/transformer-project}
+  url = {https://github.com/wujiaqi2333/manualTransformer.git}
 }
 ```
 
