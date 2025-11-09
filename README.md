@@ -48,18 +48,15 @@ transformer-project/
 
 1. 克隆项目并安装依赖：
 ```bash
-git clone <repository-url>
-cd transformer-project
+git clone https://github.com/wujiaqi2333/manualTransformer.git
+cd manualTransformer
 pip install -r requirements.txt
 ```
 
-2. 下载数据集：
-```bash
-# 手动下载WikiText-2数据集
-mkdir -p dataset/wikitext-2
-# 从 https://blog.salesforceairesearch.com/the-wikitext-long-term-dependency-language-modeling-dataset/
-# 下载并放置三个文件到 dataset/wikitext-2/ 目录
-```
+2. 数据集：
+
+可以自行手动下载WikiText-2数据集并放置三个文件到 dataset/wikitext-2/ 目录 。我的项目已经上传并给出数据集，可以直接使用
+
 
 ## 数据集介绍
 
@@ -86,81 +83,27 @@ cd scripts
 
 #### 基础模型训练（重现实验的exact命令）
 ```bash
-python src/train.py \
-    --batch-size 32 \
-    --seq-len 128 \
-    --epochs 20 \
-    --d-model 512 \
-    --n-heads 8 \
-    --num-layers 6 \
-    --d-ff 2048 \
-    --dropout 0.1 \
-    --lr 0.0001 \
-    --clip-grad 1.0 \
-    --warmup-steps 4000 \
-    --use-decoder \
-    --seed 42 \
-    --save-dir checkpoints/base_model \
-    --data-dir dataset/wikitext-2
+python src/train.py  --batch-size 32   --seq-len 128   --epochs 20    --d-model 512    --n-heads 8    --num-layers 6  --d-ff 2048  --dropout 0.1   --lr 0.0001   --clip-grad 1.0    --warmup-steps 4000     --seed 42  --use-decoder   --save-dir checkpoints/base_model
 ```
 
 #### 使用相对位置编码
 ```bash
-python src/train.py \
-    --batch-size 32 \
-    --seq-len 128 \
-    --epochs 20 \
-    --d-model 512 \
-    --n-heads 8 \
-    --num-layers 6 \
-    --use-relative-pos \
-    --seed 42 \
-    --save-dir checkpoints/relative_pos \
-    --data-dir dataset/wikitext-2
+python src/train.py  --batch-size 32  --seq-len 128   --epochs 20   --d-model 512    --n-heads 8     --num-layers 6     --use-relative-pos     --seed 42     --save-dir checkpoints/relative_pos     --data-dir dataset/wikitext-2
 ```
 
 #### 使用线性注意力
 ```bash
-python src/train.py \
-    --batch-size 32 \
-    --seq-len 128 \
-    --epochs 20 \
-    --d-model 512 \
-    --n-heads 8 \
-    --attention-type linear \
-    --seed 42 \
-    --save-dir checkpoints/linear_attention \
-    --data-dir dataset/wikitext-2
+python src/train.py  --batch-size 32   --seq-len 128     --epochs 20     --d-model 512     --n-heads 8    --attention-type linear     --seed 42    --save-dir checkpoints/linear_attention     --data-dir dataset/wikitext-2
 ```
 
 #### 消融实验 - 更小的模型
 ```bash
-python src/train.py \
-    --batch-size 32 \
-    --seq-len 128 \
-    --epochs 20 \
-    --d-model 256 \
-    --n-heads 4 \
-    --num-layers 4 \
-    --d-ff 1024 \
-    --seed 43 \
-    --save-dir checkpoints/small_model \
-    --data-dir dataset/wikitext-2
+python src/train.py  --batch-size 32    --seq-len 128     --epochs 20     --d-model 256     --n-heads 4     --num-layers 4     --d-ff 1024     --seed 43     --save-dir checkpoints/small_model     --data-dir dataset/wikitext-2
 ```
 
 #### 消融实验 - 更大的模型
 ```bash
-python src/train.py \
-    --batch-size 16 \
-    --seq-len 128 \
-    --epochs 15 \
-    --d-model 768 \
-    --n-heads 12 \
-    --num-layers 8 \
-    --d-ff 3072 \
-    --seed 44 \
-    --save-dir checkpoints/large_model \
-    --data-dir dataset/wikitext-2
+python src/train.py    --batch-size 16    --seq-len 128     --epochs 15     --d-model 768     --n-heads 12     --num-layers 8    --d-ff 3072   --seed 44   --save-dir checkpoints/large_model    --data-dir dataset/wikitext-2
 ```
 
 ## 核心实现
@@ -235,13 +178,14 @@ if clip_grad > 0:
 
 ### 性能指标
 
-| 模型配置 | 参数量 | 训练损失 | 验证损失 | 测试困惑度 | 训练时间 |
-|---------|--------|----------|----------|------------|----------|
-| Base (6L, 512D) | ~45M | 3.21 | 4.89 | 132.5 | 2.1h |
-| + Relative Pos | ~46M | 3.18 | 4.76 | 116.8 | 2.3h |
-| + Linear Attention | ~45M | 3.25 | 4.95 | 141.2 | 1.7h |
-| Small (4L, 256D) | ~18M | 3.89 | 5.42 | 225.9 | 1.2h |
-| Large (8L, 768D) | ~125M | 2.95 | 4.52 | 91.8 | 4.5h |
+| 模型配置 | 参数量 | 训练损失   | 测试损失   | 测试困惑度 | 训练时间 |
+|---------|--------|--------|--------|-------|------|
+| Base (6L, 512D) | ~45M | 0.0471 | 0.0903 | 1.09  | 1.8h |
+| + Relative Pos | ~46M | 0.0455 | 0.0901 | 1.07  | 2.1h |
+| + Linear Attention | ~45M | 0.0481 | 0.908  | 1.13  | 1.7h |
+| Small (4L, 256D) | ~18M | 0.0492 | 0.0898 | 1.09  | 0.4h |
+| Large (8L, 768D) | ~125M | 0.1023 | 0.1235 | 1.13  | 1.1h |
+ps:除了Large训练了15个epoch之外，其他都是训练了20个epoch
 
 ### 训练曲线
 
